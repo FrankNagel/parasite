@@ -115,17 +115,18 @@ class ParText():
         format: either as a dict of types [format='types'] (with frequency as value) 
             or a list of tokens [format='tokens']
         """
-        # collect all wordforms (types and tokens)
-        self.wordforms = collections.defaultdict(int)
-        for id,verse in self.verses:
-            for word in verse:
-                if word.strip() != '': self.wordforms[word] += 1
-           
-        
-        if format == "tokens":
-            return sorted(self.wordforms.keys())
-        else:
-            return self.wordforms
+        if format == 'types':
+            # collect all wordforms (types and tokens)
+            wordforms = collections.defaultdict(int)
+            for id,verse in self.verses:
+                for word in verse:
+                    wordforms[word] += 1
+            return wordforms
+        else: # tokens
+            words = set()
+            for id, verse in self.verses:
+                words.update(verse)
+            return sorted(words)
             
     def wordforms_verses_count(self):
         """Returns a two-dimensional dictionary of wordforms and verses and how often the
