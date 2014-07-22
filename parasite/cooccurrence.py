@@ -52,17 +52,11 @@ class Cooccurrence():
         self.matrix1,self.wf1,self.wfdict1 = text1.get_matrix(matrix_width)
         self.matrix2,self.wf2,self.wfdict2 = text2.get_matrix(matrix_width)
         
-        # get common verses
-        verseids1 = text1.get_verseids()
-        verseids2 = text2.get_verseids()
-        common_verseids = list(set(verseids1).intersection(set(verseids2)))
-        
-        cv = np.array(common_verseids)
-        m1 = csc_matrix(self.matrix1,dtype="int32")[:,cv]
-        m2 = csc_matrix(self.matrix2,dtype="int32")[:,cv]
+        m1 = csc_matrix(self.matrix1, dtype="int32")
+        m2 = csc_matrix(self.matrix2.T, dtype="int32") # Transposed! Only used in multiplication below
         
         # get observed matrix
-        O = m1 * m2.T
+        O = m1 * m2
         
         # get expected matrix
         N = O.sum(1).sum()
