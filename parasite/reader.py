@@ -191,7 +191,7 @@ class ParText():
                 coldata.append(id)
                 data.append(1)
                 
-        sparse = coo_matrix((data,(rowdata,coldata)),dtype="int16",shape=(len(wordforms),99999999))
+        sparse = coo_matrix((data,(rowdata,coldata)),dtype="int32",shape=(len(wordforms),99999999))
 
         return sparse,wordforms,wordforms_by_number
         
