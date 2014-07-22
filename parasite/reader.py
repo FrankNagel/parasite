@@ -26,7 +26,7 @@ class ParText():
     enc: encoding of the file (default: UTF-8)
     """
     
-    def __init__(self,filename,commentmarker="#",sep="\t",enc="utf-8",portions=range(0,67)):
+    def __init__(self,filename,commentmarker="#",sep="\t",enc="utf-8",portions=None):
         
         self.iso = filename[:3]
         self.filename = filename
@@ -38,27 +38,26 @@ class ParText():
             filename = iso_by_bible[filename]
         
         # open file
-        fh = codecs.open(filename,'r',encoding=enc).readlines()
+        fh = [line for line in codecs.open(filename,'r',encoding=enc).readlines()
+              if not line.lstrip().startswith(commentmarker)]
 
-        self.raw_verses = [(int(items[0].strip()),items[1].strip().split()) 
+        self.raw_verses = [(int(items[0]),items[1].split()) 
             for line in fh
             for items in [line.split(sep,1)]
-            if not line.strip().startswith(commentmarker)
-            if int(line.strip()[:2]) in portions]
+            if portions == None or int(line.lstrip()[:2]) in portions]
         
         # clean up all punctuation marks TODO: find a better method to remove all non-letters!
-        pat = re.compile("[“”‘’`´“”‘’`´‚<>.;,:?¿‹›!()\[\]—\"„§$%&\/\=_{}]") 
+        pat = re.compile("[“”‘’`´“”‘’`´‚<>.;,:?¿‹›!()\[\]—\"„§$%&\/\=_{}]")
         fh = "\t\t".join(fh)
-        fh = re.sub(pat,'',fh)
+        fh = re.sub(pat,'',fh).lower()
         fh = fh.split("\t\t")
         
         # collect all verses    
-        self.verses = [(int(items[0].strip()),items[1].strip().lower().split()) for line in fh 
+        self.verses = [(int(items[0]),items[1].split()) for line in fh 
                     for items in [line.split(sep,1)] 
-                    if not line.strip().startswith(commentmarker)
-                    if int(line.strip()[:2]) in portions] 
+                    if portions == None or int(line.lstrip()[:2]) in portions] 
                     
-        self.versedict = {v[0]:v[1] for v in self.verses}
+        self.versedict = dict(self.verses)
                     
     def __getitem__(self,id):
         """Returns the text of the verse given by the verse id.
@@ -84,7 +83,7 @@ class ParText():
         if format == "tuple":
             return self.verses
         else:
-            return dict(self.verses)
+            return self.versedict
             
     def get_verses_strings(self):
         """
