@@ -180,20 +180,22 @@ class ParText():
         """Returns a sparse matrix with verse IDs as row names and words as column names where
         each cell indicates how many times the word occurs in the respective verse."""
 
+        def row_iter(verses, wordforms_by_number):
+            for id, verse in verses:
+                for word in verse:
+                    yield wordforms_by_number[word]
+
+        def column_iter(verses):
+            for id, verse in verses:
+                for _ in verse:
+                    yield id
+
         wordforms = self.get_wordforms(format="tokens")
-        
-        rowdata = list()
-        coldata = list()
-        data = list()
         wordforms_by_number = {w: i for i,w in enumerate(wordforms)}
-        wfcounter = 0
-        for id,verse in self.verses:
-            for word in verse:
-                #words_by_verses[word].append(id)
-                rowdata.append(wordforms_by_number[word])
-                coldata.append(id)
-                data.append(1)
-                
+
+        rowdata = np.fromiter(row_iter(self.verses, wordforms_by_number), 'int32')
+        coldata = np.fromiter(column_iter(self.verses), 'int32')
+        data = np.ones(len(coldata), dtype='int32')
         sparse = coo_matrix((data,(rowdata,coldata)),dtype="int32",shape=(len(wordforms),matrix_width))
 
         return sparse,wordforms,wordforms_by_number
