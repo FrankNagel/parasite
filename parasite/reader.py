@@ -172,8 +172,11 @@ class ParText():
         """Returns the verse Ids for this parallel text."""
         
         return sorted([v[0] for v in self.verses])
-        
-    def get_matrix(self):
+
+    def get_max_verseid(self):
+        return self.verses[-1][0]
+
+    def get_matrix(self, matrix_width=99999999):
         """Returns a sparse matrix with verse IDs as row names and words as column names where
         each cell indicates how many times the word occurs in the respective verse."""
 
@@ -191,7 +194,7 @@ class ParText():
                 coldata.append(id)
                 data.append(1)
                 
-        sparse = coo_matrix((data,(rowdata,coldata)),dtype="int32",shape=(len(wordforms),99999999))
+        sparse = coo_matrix((data,(rowdata,coldata)),dtype="int32",shape=(len(wordforms),matrix_width))
 
         return sparse,wordforms,wordforms_by_number
         

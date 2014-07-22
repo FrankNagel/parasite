@@ -48,8 +48,9 @@ class Cooccurrence():
         self.text1 = text1
         self.text2 = text2
 
-        self.matrix1,self.wf1,self.wfdict1 = text1.get_matrix()
-        self.matrix2,self.wf2,self.wfdict2 = text2.get_matrix()
+        matrix_width = max(text1.get_max_verseid(), text2.get_max_verseid()) + 1
+        self.matrix1,self.wf1,self.wfdict1 = text1.get_matrix(matrix_width)
+        self.matrix2,self.wf2,self.wfdict2 = text2.get_matrix(matrix_width)
         
         # get common verses
         verseids1 = text1.get_verseids()
