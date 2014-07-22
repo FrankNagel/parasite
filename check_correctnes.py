@@ -1,7 +1,6 @@
 import sys
 import os
-import cProfile
-import timeit
+import time
 import parasite.views as views
 
 destdir = 'basedata'
@@ -18,8 +17,10 @@ def main(args):
         print args
 
         url = '/compare/%s/%s/%s/' % args
-        
+
+        start = time.time()
         result = views.app.test_client().get(url)
+        print time.time()-start
         if result.status_code != 200:
             print result
             continue
@@ -27,6 +28,8 @@ def main(args):
             ref = fp.read()
             if ref != result.get_data():
                 print 'Fail:', args
+                with open('%s_%s_%s' % args, 'w') as fp2:
+                    fp2.write(result.get_data())
                 continue
         success += 1
     print 'success rate: %i/%i' % (success, count)

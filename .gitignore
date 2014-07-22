@@ -6,3 +6,4 @@ parasite/static/files/
 parasite/static/data/
 .DS_Store
 flask/
+basedata/
